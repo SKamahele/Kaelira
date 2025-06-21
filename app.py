@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # DeepSeek Setup
 deepseek_client = DeepSeekClient(
-    api_key=os.environ.get("DEEPSEEK_API_KEY"),
+    api_key=os.environ.get("sk-f9ab7196017345b7805ea3ebbf78f22b"),
     base_url="https://api.deepseek.com"
 )
 
