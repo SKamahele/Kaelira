@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, render_template, jsonify
 from kaelira_writer import generate_code, save_code
-from deepseek import DeepSeekClient
+from openai import OpenAI
 
 app = Flask(__name__)
 
