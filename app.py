@@ -6,12 +6,12 @@ app = Flask(__name__)
 
 # Initialize both OpenAI clients
 openai_client = OpenAI(
-    api_key=os.environ.get("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"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
     base_url="https://api.openai.com/v1"
 )
 
 deepseek_client = OpenAI(
-    api_key=os.environ.get("sk-f9ab7196017345b7805ea3ebbf78f22b"),
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),
     base_url="https://api.deepseek.com"
 )
 
