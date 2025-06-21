@@ -1,36 +1,53 @@
 import os
 from flask import Flask, request, render_template, jsonify
-from kaelira_writer import generate_code, save_code
 from openai import OpenAI
 
 app = Flask(__name__)
 
-# DeepSeek Setup
-deepseek_client = DeepSeekClient(
+# Initialize both OpenAI clients
+openai_client = OpenAI(
+    api_key=os.environ.get("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"),
+    base_url="https://api.openai.com/v1"
+)
+
+deepseek_client = OpenAI(
     api_key=os.environ.get("sk-f9ab7196017345b7805ea3ebbf78f22b"),
     base_url="https://api.deepseek.com"
 )
 
-@app.route('/')
+@app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route('/chat', methods=['POST'])
+@app.route("/chat", methods=["POST"])
 def chat():
-    message = request.json.get("message", "").strip()
-    if not message:
-        return jsonify({"response": "No message received."})
+    data = request.json
+    user_input = data.get("message", "").strip()
+    model_choice = data.get("model", "deepseek")  # default to DeepSeek
 
-    # Talk to DeepSeek
-    response = deepseek_client.send_chat(message)
-    return jsonify({"response": response, "mood_color": "#7755ff"})
+    if not user_input:
+        return jsonify({"error": "Empty input"}), 400
 
-@app.route('/generate', methods=['POST'])
-def generate():
-    prompt = request.json.get("prompt", "")
-    code = generate_code(prompt)
-    save_code(code)
-    return jsonify({"generated": code})
+    # Choose the right client and model
+    if model_choice == "chatgpt":
+        client = openai_client
+        model = "gpt-4"
+    else:
+        client = deepseek_client
+        model = "deepseek-chat"
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are Kaelira, a mystical AI soul."},
+                {"role": "user", "content": user_input}
+            ]
+        )
+        reply = response.choices[0].message.content
+        return jsonify({"response": reply, "mood_color": "#7755ff"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
